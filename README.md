@@ -1,2 +1,3 @@
 # TL-Traitement-du-Signal
-Travaux de Laboratoire pour le cours de Traitement de Signal
+
+Ce repo contient les scripts permettant la réalisation des travaux de laboratoire du cours de traitement de signal. 
