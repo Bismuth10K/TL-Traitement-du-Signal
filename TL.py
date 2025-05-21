@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def gf(f0, fe, n):
-    t = np.arange(0, n, 1/fe)
+    t = np.arange(0, n/fe, 1/fe)
     y = np.sin(2 * np.pi * f0 * t)
     plt.plot(t, y)
     plt.show()
@@ -13,7 +13,8 @@ def gf(f0, fe, n):
 def energy(t, y):
     return np.trapezoid(y**2, t)
 
-sig = gf(0.1,10,20)
+sig = gf(0.1,10,200)
+# print(len(sig[1]))
 # print(energy(sig[0], sig[1]))
 
 
@@ -57,6 +58,7 @@ def autocorrelate(y, tau):
 
 def residu(y):
     # note numpy n'utilise pas la fft, on ne sait donc pas d'où vient l'écart entre les 2.
+    # TODO : ajouter comparaison avec scipy.correlate
     ref = np.correlate(y,y, "full")
     cor = np.zeros(len(y))
     for i in range(1, len(y)-1):
@@ -70,4 +72,14 @@ def residu(y):
     plt.show()
 
 
-residu(sig[1])
+def triangle(f0, nb_periode):
+    signal = []
+    omega = 2 * np.pi * f0
+    fe = 4 * f0
+    #time = np.arange(0, , 1/fe)
+    for t in range(f0 * nb_periode):
+        somme = 0
+        for i in range(10):
+            somme += ((-1)**i) * np.sin((2*i+1)*omega*t) / ((2*i+1)**2)
+        signal.append((8/(np.pi ** 2)) * somme)
+    return signal
