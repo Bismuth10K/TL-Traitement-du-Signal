@@ -49,7 +49,8 @@ def quantify(t, y, n):
 quantify(sig[0], sig[1], 8)
 
 def noise_energy(t, n):
-    return ((n**2)/12) * (t[-1]-t[0])
+    # viens du cours
+    return (((1/2**(n-1))**2)/12) * (t[-1]-t[0])
 
 
 def rsb(t, y, f0, fe, n):
@@ -83,10 +84,23 @@ def triangle(f0, nb_periode):
     signal = []
     omega = 2 * np.pi * f0
     fe = 4 * f0
-    #time = np.arange(0, , 1/fe)
-    for t in range(f0 * nb_periode):
+    time = np.arange(0, nb_periode + 1/fe, 1/fe)
+    for t in time:
         somme = 0
         for i in range(10):
             somme += ((-1)**i) * np.sin((2*i+1)*omega*t) / ((2*i+1)**2)
         signal.append((8/(np.pi ** 2)) * somme)
-    return signal
+    return time, signal
+
+# trig = triangle(1, 5)
+# plt.plot(trig[0], trig[1])
+# plt.show()
+
+
+def noise(fe, nb_periode):
+    time = np.arange(0, nb_periode + 1/fe, 1/fe)
+    return time, np.random.normal(0, 0.4, len(time))
+
+bruit = noise(100, 5)
+plt.plot(bruit[0], bruit[1])
+plt.show()
