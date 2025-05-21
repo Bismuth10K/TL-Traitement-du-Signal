@@ -16,6 +16,12 @@ axs[0].plot(t_bj, data_bj)
 axs[1].plot(t_ar, data_ar)
 plt.show()
 
+print(min(data_bj))
+print(max(data_bj))
+
+scaled_data_bj = (((data_bj - min(data_bj)) / (max(data_bj) - min(data_bj))) * 2) - 1
+print(min(scaled_data_bj))
+print(max(scaled_data_bj))
 
 #! Q 1.2.3
-new_t_bj, new_y_bj = quantify(t_bj, data_bj, 4)
+new_t_bj, new_y_bj = quantify(t_bj, scaled_data_bj, 4)
