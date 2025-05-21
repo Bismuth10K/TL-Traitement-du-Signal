@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def gf(f0, fe, n):
-    t = np.arange(0, n, 1/fe)
+    t = np.arange(0, n/fe, 1/fe)
     y = np.sin(2 * np.pi * f0 * t)
     plt.plot(t, y)
     plt.show()
@@ -13,14 +13,17 @@ def gf(f0, fe, n):
 def energy(t, y):
     return np.trapezoid(y**2, t)
 
-# sig = gf(0.1,10,20)
+sig = gf(0.1,10,200)
+# print(len(sig[1]))
 # print(energy(sig[0], sig[1]))
+
 
 def mean_power(t, y, f0, fe):
     stop = int(fe/f0 + 1)
     return np.trapezoid(y[:stop]**2, t[:stop])
 
 # print(mean_power(sig[0], sig[1], 0.1, 10))
+
 
 def quantify(t, y, n):
     q = 1/2**(n-1)
@@ -35,10 +38,48 @@ def quantify(t, y, n):
     plt.show()
     return t, new_y
 
+
 # quantify(sig[0], sig[1], 2)
 
 def noise_energy(t, n):
     return ((n**2)/12) * (t[-1]-t[0])
 
+
 def rsb(t, y, f0, fe, n):
     return 10 * np.log10(mean_power(t, y, f0, fe)/noise_energy(t, n))
+
+
+def autocorrelate(y, tau):
+    # on suppose le signal réel
+    y_tau = np.zeros(len(y))
+    y_tau[:tau] = y[-tau:]
+    return sum(y * y_tau)
+
+
+def residu(y):
+    # note numpy n'utilise pas la fft, on ne sait donc pas d'où vient l'écart entre les 2.
+    # TODO : ajouter comparaison avec scipy.correlate
+    ref = np.correlate(y,y, "full")
+    cor = np.zeros(len(y))
+    for i in range(1, len(y)-1):
+        cor[i] = autocorrelate(y, i)
+    tab1 = cor[1:-1]
+    tab2 = ref[:len(tab1)]
+    plt.plot(tab2 - tab1)
+    plt.title("Différence entre np.correlate et TL.autocorrelate")
+    plt.ylabel("écart")
+    plt.xlabel("tau")
+    plt.show()
+
+
+def triangle(f0, nb_periode):
+    signal = []
+    omega = 2 * np.pi * f0
+    fe = 4 * f0
+    #time = np.arange(0, , 1/fe)
+    for t in range(f0 * nb_periode):
+        somme = 0
+        for i in range(10):
+            somme += ((-1)**i) * np.sin((2*i+1)*omega*t) / ((2*i+1)**2)
+        signal.append((8/(np.pi ** 2)) * somme)
+    return signal
