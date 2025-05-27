@@ -107,6 +107,9 @@ def noise(fe, nb_periode):
 # sig1 = gf(10, 21, 200)
 # sig2 = gf(10, 40, 200)
 # sig3 = gf(10, 10, 200)
+# sig1 = gf(10, 21, 200)
+# sig2 = gf(10, 40, 200)
+# sig3 = gf(10, 10, 200)
 
 # plt.show()
 
