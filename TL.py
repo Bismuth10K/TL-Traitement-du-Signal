@@ -16,16 +16,11 @@ def gf(f0, fe, n):
 def energy(t, y):
     return np.trapezoid(y**2, t)
 
-sig = gf(0.1,10,200)
-print(len(sig[1]))
-print(energy(sig[0], sig[1]))
-
 
 def mean_power(t, y, f0, fe):
     stop = int(fe/f0 + 1)
     return np.trapezoid(y[:stop]**2, t[:stop])
 
-print(mean_power(sig[0], sig[1], 0.1, 10))
 
 
 def quantify(t, y, n):
@@ -46,7 +41,6 @@ def quantify(t, y, n):
     return t, new_y
 
 
-quantify(sig[0], sig[1], 8)
 
 def noise_energy(t, n):
     # viens du cours
@@ -101,6 +95,15 @@ def noise(fe, nb_periode):
     time = np.arange(0, nb_periode + 1/fe, 1/fe)
     return time, np.random.normal(0, 0.4, len(time))
 
-bruit = noise(100, 5)
-plt.plot(bruit[0], bruit[1])
+# bruit = noise(100, 5)
+# plt.plot(bruit[0], bruit[1])
+# plt.show()
+
+
+# pour 3.1
+
+sig1 = gf(10, 21, 200)
+sig2 = gf(10, 40, 200)
+sig3 = gf(10, 10, 200)
+
 plt.show()
