@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.io import wavfile
 
 
 def gf(f0, fe, n):
@@ -9,7 +10,7 @@ def gf(f0, fe, n):
     plt.xlabel("Temps (s)")
     plt.ylabel("Amplitude")
     # plt.savefig("./plots/q1.1.1.png")
-    # plt.show()
+    plt.show()
     return t, y
 
 
@@ -35,11 +36,12 @@ def quantify(t, y, n):
     plt.plot(t, new_y)
     plt.xlabel("Temps (s)")
     plt.ylabel(f"Signal quantifié sur {n} bits")
-    # Rajouter -2 à la fin du titre pour un n = 3
-    # plt.savefig("./plots/q1.1.3.png")
+    if n == 8:
+        plt.savefig("./plots/q1.1.3.png")
+    else:
+        plt.savefig("./plots/q1.1.3-2.png")
     plt.show()
     return t, new_y
-
 
 
 def noise_energy(t, n):
@@ -102,8 +104,36 @@ def noise(fe, nb_periode):
 
 # pour 3.1
 
-sig1 = gf(10, 21, 200)
-sig2 = gf(10, 40, 200)
-sig3 = gf(10, 10, 200)
+# sig1 = gf(10, 21, 200)
+# sig2 = gf(10, 40, 200)
+# sig3 = gf(10, 10, 200)
 
-plt.show()
+# plt.show()
+
+if __name__ == "__main__":
+    rate = 11025
+    loc_fo = 100
+    loc_fe = rate * loc_fo
+    loc_n = 200000
+    t, y = gf(loc_fo, loc_fe, loc_n)
+    t1, y1 = quantify(t, y, 3)
+    t2, y2 = quantify(t, y, 8)
+
+    fig, axs = plt.subplots(2)
+    t_1 = np.arange(len(y1)) / rate
+    t_2 = np.arange(len(y2)) / rate
+    axs[0].plot(t_1, y1)
+    axs[1].plot(t_2, y2)
+    plt.title("Quantifié")
+    plt.show()
+
+    wavfile.write('sin3.wav', rate, np.array(y1))
+    wavfile.write('sin8.wav', rate, np.array(y2))
+
+    rsb_sin = rsb(t, y, loc_fo, loc_fe, loc_n)
+    rsb1 = rsb(t1, y1, loc_fo, loc_fe, loc_n)
+    rsb2 = rsb(t2, y2, loc_fo, loc_fe, loc_n)
+    print(rsb_sin)
+    print(rsb1)
+    print(rsb2)
+
