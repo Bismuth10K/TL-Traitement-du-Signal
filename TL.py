@@ -9,7 +9,7 @@ def gf(f0, fe, n):
     plt.plot(t, y)
     plt.xlabel("Temps (s)")
     plt.ylabel("Amplitude")
-    # plt.savefig("./plots/q1.1.1.png")
+    plt.savefig("./plots/q1.1.1.png")
     plt.show()
     return t, y
 
@@ -19,12 +19,13 @@ def energy(t, y):
 
 
 def mean_power(t, y, f0, fe):
+    y = np.array(y)
     stop = int(fe/f0 + 1)
     return np.trapezoid(y[:stop]**2, t[:stop])
 
 
 
-def quantify(t, y, n):
+def quantify(t, y, n, name_plot="q1.1.3"):
     q = 1/2**(n-1)
     tab = np.arange(0,2**n, 1)
     tab2 = (tab - np.mean(tab)) * q
@@ -37,9 +38,9 @@ def quantify(t, y, n):
     plt.xlabel("Temps (s)")
     plt.ylabel(f"Signal quantifié sur {n} bits")
     if n == 8:
-        plt.savefig("./plots/q1.1.3.png")
+        plt.savefig(f"./plots/{name_plot}.png")
     else:
-        plt.savefig("./plots/q1.1.3-2.png")
+        plt.savefig(f"./plots/{name_plot}-2.png")
     plt.show()
     return t, new_y
 
@@ -50,7 +51,7 @@ def noise_energy(t, n):
 
 
 def rsb(t, y, f0, fe, n):
-    return 10 * np.log10(mean_power(t, y, f0, fe)/noise_energy(t, n))
+    return 10 * np.log10(mean_power(t, y, f0, fe) / noise_energy(t, n))
 
 
 def autocorrelate(y, tau):
@@ -115,28 +116,20 @@ def noise(fe, nb_periode):
 
 if __name__ == "__main__":
     rate = 11025
-    loc_fo = 100
-    loc_fe = rate * loc_fo
-    loc_n = 200000
-    t, y = gf(loc_fo, loc_fe, loc_n)
+    loc_f0 = 100
+    loc_fe = rate
+    loc_n = 500
+    t, y = gf(loc_f0, loc_fe, loc_n)
     t1, y1 = quantify(t, y, 3)
     t2, y2 = quantify(t, y, 8)
 
-    fig, axs = plt.subplots(2)
-    t_1 = np.arange(len(y1)) / rate
-    t_2 = np.arange(len(y2)) / rate
-    axs[0].plot(t_1, y1)
-    axs[1].plot(t_2, y2)
-    plt.title("Quantifié")
-    plt.show()
+    wavfile.write('audios/sin3.wav', rate, np.array(y1))
+    wavfile.write('audios/sin8.wav', rate, np.array(y2))
 
-    wavfile.write('sin3.wav', rate, np.array(y1))
-    wavfile.write('sin8.wav', rate, np.array(y2))
-
-    rsb_sin = rsb(t, y, loc_fo, loc_fe, loc_n)
-    rsb1 = rsb(t1, y1, loc_fo, loc_fe, loc_n)
-    rsb2 = rsb(t2, y2, loc_fo, loc_fe, loc_n)
-    print(rsb_sin)
-    print(rsb1)
-    print(rsb2)
+    # rsb_sin = rsb(t, y, loc_f0, loc_fe, loc_n)
+    # print("rsb sin", rsb_sin)
+    rsb1 = rsb(t1, y1, loc_f0, loc_fe, 3)
+    print("rsb1", rsb1)
+    rsb2 = rsb(t2, y2, loc_f0, loc_fe, 8)
+    print("rsb2", rsb2)
 
