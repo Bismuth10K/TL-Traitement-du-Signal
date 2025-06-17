@@ -49,6 +49,10 @@ def noise_energy(t, n):
     # viens du cours
     return (((1/2**(n-1))**2)/12) * (t[-1]-t[0])
 
+print(noise_energy(new_t, nb_bits))
+
+print(noise_energy(new_t, nb_bits))
+
 
 def rsb(t, y, f0, fe, n):
     return 10 * np.log10(mean_power(t, y, f0, fe) / noise_energy(t, n))
