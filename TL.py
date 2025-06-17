@@ -10,7 +10,7 @@ def gf(f0, fe, n):
     plt.xlabel("Temps (s)")
     plt.ylabel("Amplitude")
     # plt.savefig("./plots/q1.1.1.png")
-    plt.show()
+    # plt.show()
     return t, y
 
 
@@ -21,7 +21,6 @@ def energy(t, y):
 def mean_power(t, y, f0, fe):
     stop = int(fe/f0 + 1)
     return np.trapezoid(y[:stop]**2, t[:stop])
-
 
 
 def quantify(t, y, n):
@@ -53,21 +52,29 @@ def rsb(t, y, f0, fe, n):
     return 10 * np.log10(mean_power(t, y, f0, fe)/noise_energy(t, n))
 
 
-def autocorrelate(y, tau):
+def _autocorrelate_util(y, tau):
     # on suppose le signal réel
     y_tau = np.zeros(len(y))
     y_tau[:tau] = y[-tau:]
     return sum(y * y_tau)
+
+def autocorrelate(y, show="default"):
+    cor = np.zeros(len(y))
+    for i in range(1, len(y) - 1):
+        cor[i] = _autocorrelate_util(y, i)
+    if show == "default":
+        cor = cor[::-1]
+        plt.plot(cor)
+        plt.xlabel("tau")
+        plt.show()
+    return cor
 
 
 def residu(y):
     # note numpy n'utilise pas la fft, on ne sait donc pas d'où vient l'écart entre les 2.
     # TODO : ajouter comparaison avec scipy.correlate
     ref = np.correlate(y,y, "full")
-    cor = np.zeros(len(y))
-    for i in range(1, len(y)-1):
-        cor[i] = autocorrelate(y, i)
-    tab1 = cor[1:-1]
+    tab1 = autocorrelate(y, "intern")[1:-1]
     tab2 = ref[:len(tab1)]
     plt.plot(tab2 - tab1)
     plt.title("Différence entre np.correlate et TL.autocorrelate")
@@ -79,8 +86,8 @@ def residu(y):
 def triangle(f0, nb_periode):
     signal = []
     omega = 2 * np.pi * f0
-    fe = 4 * f0
-    time = np.arange(0, nb_periode + 1/fe, 1/fe)
+    fe = (200 * f0) + 1
+    time = np.arange(0, nb_periode/f0, 1/fe)
     for t in time:
         somme = 0
         for i in range(10):
@@ -101,42 +108,17 @@ def noise(fe, nb_periode):
 # plt.plot(bruit[0], bruit[1])
 # plt.show()
 
+if __name__ == "main":
+    # pour 3.1
 
-# pour 3.1
+    sig1 = gf(10, 101, 1000)
+    # sig2 = gf(10, 40, 200)
+    # sig3 = gf(10, 10, 200)
 
-# sig1 = gf(10, 21, 200)
-# sig2 = gf(10, 40, 200)
-# sig3 = gf(10, 10, 200)
-# sig1 = gf(10, 21, 200)
-# sig2 = gf(10, 40, 200)
-# sig3 = gf(10, 10, 200)
+    # plt.show()
 
-# plt.show()
 
-if __name__ == "__main__":
-    rate = 11025
-    loc_fo = 100
-    loc_fe = rate * loc_fo
-    loc_n = 200000
-    t, y = gf(loc_fo, loc_fe, loc_n)
-    t1, y1 = quantify(t, y, 3)
-    t2, y2 = quantify(t, y, 8)
-
-    fig, axs = plt.subplots(2)
-    t_1 = np.arange(len(y1)) / rate
-    t_2 = np.arange(len(y2)) / rate
-    axs[0].plot(t_1, y1)
-    axs[1].plot(t_2, y2)
-    plt.title("Quantifié")
-    plt.show()
-
-    wavfile.write('sin3.wav', rate, np.array(y1))
-    wavfile.write('sin8.wav', rate, np.array(y2))
-
-    rsb_sin = rsb(t, y, loc_fo, loc_fe, loc_n)
-    rsb1 = rsb(t1, y1, loc_fo, loc_fe, loc_n)
-    rsb2 = rsb(t2, y2, loc_fo, loc_fe, loc_n)
-    print(rsb_sin)
-    print(rsb1)
-    print(rsb2)
-
+    autocorrelate(sig1[1])
+    # plt.plot(np.correlate(sig1[1], sig1[1], "full"))
+    # plt.show()
+    residu(sig1[1])
