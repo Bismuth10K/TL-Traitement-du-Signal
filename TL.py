@@ -49,10 +49,6 @@ def noise_energy(t, n):
     # viens du cours
     return (((1/2**(n-1))**2)/12) * (t[-1]-t[0])
 
-print(noise_energy(new_t, nb_bits))
-
-print(noise_energy(new_t, nb_bits))
-
 
 def rsb(t, y, f0, fe, n):
     return 10 * np.log10(mean_power(t, y, f0, fe) / noise_energy(t, n))
@@ -68,8 +64,8 @@ def autocorrelate(y, show="default"):
     cor = np.zeros(len(y))
     for i in range(1, len(y) - 1):
         cor[i] = _autocorrelate_util(y, i)
+    cor = cor[::-1]
     if show == "default":
-        cor = cor[::-1]
         plt.plot(cor)
         plt.xlabel("tau")
         plt.show()
@@ -113,15 +109,6 @@ def noise(fe, nb_periode):
 # bruit = noise(100, 5)
 # plt.plot(bruit[0], bruit[1])
 # plt.show()
-
-if __name__ == "main":
-    # pour 3.1
-
-    sig1 = gf(10, 101, 1000)
-    # sig2 = gf(10, 40, 200)
-    # sig3 = gf(10, 10, 200)
-
-    # plt.show()
 
 if __name__ == "__main__":
     rate = 11025
