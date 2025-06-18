@@ -60,7 +60,7 @@ def elevation(file_name, slice_size, start_idx, n, new_file_name):
     return new_fe, np.array(signal)
 
 
-down = decimate("audacity/CHHHAAAAAAAAA.wav", 10000, 21000, 2, "down_chat.wav")
+down = decimate("audacity/CHHHAAAAAAAAA.wav", 10000, 21000, 2, "audacity/down_chat.wav")
 up = elevation("audacity/CHHHAAAAAAAAA.wav", 10000, 21000, 2, "up_chat.wav")
 
 Ndown = len(down[1])
