@@ -14,6 +14,7 @@ from TL import *
 
 
 def zero_padding(signal, pad):
+    """Rajoute pad zéros au début et à la fin du signal."""
     signal = list(signal)
     for i in range(pad):
         signal.insert(0, 0)
@@ -22,6 +23,7 @@ def zero_padding(signal, pad):
 
 
 def dse(file_name, slice_size, start_idx, pad = None):
+    """Renvoie la densité spectrale d'énergie du signal."""
     fe, signal = wavfile.read(file_name)
     if pad is not None:
         signal = zero_padding(signal, pad)
@@ -37,6 +39,7 @@ plt.show()
 
 
 def decimate(file_name, slice_size, start_idx, n, new_file_name):
+    """Décime le signal avec un facteur n."""
     fe, signal = wavfile.read(file_name)
     new_signal = []
     for i in range(0, slice_size, n):
@@ -46,6 +49,7 @@ def decimate(file_name, slice_size, start_idx, n, new_file_name):
     return new_fe, new_signal
 
 def elevation(file_name, slice_size, start_idx, n, new_file_name):
+    "Elevation de signal de facteur n."
     fe, signal = wavfile.read(file_name)
     signal = list(signal[start_idx:start_idx+slice_size])
     for i in range(slice_size, 0, -1):
