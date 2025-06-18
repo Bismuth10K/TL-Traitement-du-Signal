@@ -35,7 +35,7 @@ chat = chat / 32767
 # autocorrelate(chat[21200:22010])
 # autocorrelate(chat[34500:35320])
 
-signal = chat[21200:22010]
+signal = chat[21000:22000]
 freq = np.arange(len(signal))/len(signal)*16000
 fft1 = fft(signal)
 
