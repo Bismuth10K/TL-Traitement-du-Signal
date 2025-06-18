@@ -7,6 +7,7 @@ import copy
 def est_voise(signal, seuil_autocorr=0.2, min_lag=20, max_lag=200):
     """
     Détecte si un segment est voisé.
+
     :param signal: le segment audio
     :param seuil_autocorr: seuil pour la détection de périodicité
     :param min_lag: lag minimum
@@ -24,6 +25,7 @@ def est_voise(signal, seuil_autocorr=0.2, min_lag=20, max_lag=200):
 def trouver_pitch(signal, fs, min_lag, max_lag):
     """
     Trouve le pitch (fréquence fondamentale) d'un segment voisé.
+
     :param signal: le segment audio
     :param fs: fréquence d'échantillonnage
     :param min_lag: lag minimum (samples)
@@ -43,6 +45,7 @@ def trouver_pitch(signal, fs, min_lag, max_lag):
 def freq_to_midi(freq):
     """
     Convertit une fréquence (Hz) en note MIDI.
+
     :param freq: fréquence (Hz)
     :return: float (note MIDI), ou None si fréquence invalide
     """
@@ -54,6 +57,11 @@ def freq_to_midi(freq):
 def detecter_notes(data, fs, duree_tranche, min_pitch, max_pitch, duree_min_note):
     """
     Détecte les notes dans un signal audio.
+
+    Il va analyser chaque tranche du son et détecter le pitch et la note, avant d'agréger tout cela dans un tableau.
+    Ce tableau est ensuite réduit selon la note MIDI.
+    Si plusieurs lignes de suite on la même note, nous supprimons les lignes suivant la première de la suite.
+
     :param data: signal audio (array)
     :param fs: fréquence d'échantillonnage (Hz)
     :param duree_tranche: durée d'une tranche (s)
@@ -73,7 +81,7 @@ def detecter_notes(data, fs, duree_tranche, min_pitch, max_pitch, duree_min_note
         debut = i * n_ech_tranche
         fin = debut + n_ech_tranche
         tranche = data[debut:fin]
-        freq = trouver_pitch(tranche, fs, min_lag, max_lag)
+        freq = trouver_pitch(tranche, fs, min_lag, max_lag).astype(float)
         if freq is not None and min_pitch <= freq <= max_pitch:
             note = freq_to_midi(freq)
             temps = i * duree_tranche
@@ -93,7 +101,7 @@ def detecter_notes(data, fs, duree_tranche, min_pitch, max_pitch, duree_min_note
         temps_fin = notes_brutes[j-1][0] + duree_tranche if j > i else temps_debut + duree_tranche
         duree = temps_fin - temps_debut
         if duree >= duree_min_note:
-            notes_fusionnees.append([temps_debut, freq, note])
+            notes_fusionnees.append([temps_debut, freq, note, duree])
         i = j
 
     return np.array(notes_fusionnees)
@@ -121,7 +129,9 @@ if __name__ == "__main__":
 
         cur_analyzed_audio_NAN = copy.deepcopy(current_analyzed_audio)
         cur_analyzed_audio_NAN[current_analyzed_audio == None] = np.nan
-        cur_audio_stats = [wav, np.nanmean(cur_analyzed_audio_NAN[:, 1], axis=0).astype(float), np.nanvar(cur_analyzed_audio_NAN[:, 1], axis=0).astype(float)]
+        cur_mean = np.nanmean(cur_analyzed_audio_NAN[:, 1], axis=0).astype(float)
+        cur_var = np.nanvar(cur_analyzed_audio_NAN[:, 1], axis=0).astype(float)
+        cur_audio_stats = [wav, cur_mean, cur_var]
         all_stats.append(cur_audio_stats)
 
         count_none = 0
@@ -130,10 +140,10 @@ if __name__ == "__main__":
                 count_none += 1
                 print(f"\tt = {delta[0]}: fréquence = None")
             else:
-                print(f"\tt = {round(delta[0], 2)}: fréquence = {round(delta[1].astype(float), 2)}Hz - node MIDI = {delta[2]}")
+                print(f"\tt = {round(delta[0], 2)} pendant {round(delta[3], 2)}s: fréquence = {round(delta[1].astype(float), 2)}Hz - node MIDI = {delta[2]}")
         print(f"{count_none}/{len(current_analyzed_audio)} de segments non voisés.")
         print("-----\n")
 
-    print(all_stats)
+    print(np.array(all_stats))
 
 
