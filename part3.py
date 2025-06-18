@@ -78,6 +78,7 @@ plt.show()
 
 
 def sum_sin(A0, A1, f0, f1, fe, n):
+    """Somme des sinus en entrées"""
     t = np.arange(0, n/fe, 1/fe)
     y = A0 * np.sin(2 * np.pi * f0 * t) + A1 * np.sin(2 * np.pi * f1 * t)
     # plt.plot(t, y)
@@ -88,6 +89,7 @@ def sum_sin(A0, A1, f0, f1, fe, n):
     return t, y
 
 def fenetrage_de_hann(t, signal, T):
+    """Application d'un fenêtrage de Hann"""
     new_signal = []
     for i in range(len(t)):
         if t[i] > T:
